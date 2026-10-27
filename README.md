@@ -14,25 +14,26 @@ Modular Terraform baseline implementing a multi-tier AWS network topology, centr
 
 ---
 
-## Repository Layout
+## Subnet Allocation Blueprint
 
-```text
-├── modules/
-│   ├── vpc/                    # Multi-AZ subnets, NAT Gateways, Flow Logs, route tables
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│   ├── security_baseline/      # CloudTrail, KMS CMK, encrypted audit S3 bucket
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│   └── iam_boundaries/         # Guardrail boundary policy for delegated IAM roles
-│       ├── main.tf
-│       ├── variables.tf
-│       └── outputs.tf
-├── main.tf                     # Root orchestration module
-├── variables.tf                # Global input variables
-├── terraform.tfvars            # Production environment variable assignments
-├── outputs.tf                  # Exported VPC IDs, subnet tiers, and KMS ARNs
-├── versions.tf                 # Terraform core and AWS provider versions
-└── .gitignore
+| Subnet Tier | Default CIDR Mask | Target Workloads | Internet Route Type |
+| :--- | :--- | :--- | :--- |
+| **Public** | `10.100.1.0/24`, `10.100.2.0/24`, `10.100.3.0/24` | ALBs, Bastion, NAT Gateways | Internet Gateway (`0.0.0.0/0`) |
+| **Private App** | `10.100.10.0/24`, `10.100.20.0/24`, `10.100.30.0/24` | EC2 Fleets, EKS Worker Nodes | NAT Gateway (`0.0.0.0/0`) |
+| **Isolated Data**| `10.100.100.0/24`, `10.100.200.0/24`, `10.100.210.0/24` | RDS, Aurora, ElastiCache | Local VPC Only (No IGW/NAT) |
+
+---
+
+## Prerequisites
+
+- AWS CLI configured with administrator privileges
+- Terraform `>= 1.5.0`
+- Target AWS account with permissions for VPC, EC2, KMS, S3, CloudTrail, and IAM
+
+---
+
+## Deployment & Verification
+
+### 1. Initialize Modules and Provider Plugins
+```bash
+terraform init
