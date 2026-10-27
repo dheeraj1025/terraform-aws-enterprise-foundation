@@ -13,17 +13,6 @@ Modular Terraform baseline implementing a multi-tier AWS network topology, centr
 - **IAM Permission Boundaries:** Automated guardrail policy preventing privilege escalation and protecting security infrastructure across delegated roles.
 
 ---
-
-## Subnet Allocation Blueprint
-
-| Subnet Tier | Default CIDR Mask | Target Workloads | Internet Route Type |
-| :--- | :--- | :--- | :--- |
-| **Public** | `10.100.1.0/24`, `10.100.2.0/24`, `10.100.3.0/24` | ALBs, Bastion, NAT Gateways | Internet Gateway (`0.0.0.0/0`) |
-| **Private App** | `10.100.10.0/24`, `10.100.20.0/24`, `10.100.30.0/24` | EC2 Fleets, EKS Worker Nodes | NAT Gateway (`0.0.0.0/0`) |
-| **Isolated Data**| `10.100.100.0/24`, `10.100.200.0/24`, `10.100.210.0/24` | RDS, Aurora, ElastiCache | Local VPC Only (No IGW/NAT) |
-
----
-
 ## Prerequisites
 
 - AWS CLI configured with administrator privileges
@@ -35,5 +24,5 @@ Modular Terraform baseline implementing a multi-tier AWS network topology, centr
 ## Deployment & Verification
 
 ### 1. Initialize Modules and Provider Plugins
-```bash
+bash
 terraform init
